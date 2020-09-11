@@ -33,7 +33,7 @@ Reviewed each of the features to try to discern what we thought it represented, 
 
 1. A Naive Bayes model was applied to the description to get a predict proba - the model was pickled, and then inserted as a feature into the main Random Forest model.
 
-2. We engineered a feature to determine how similar the subdomain of the email is to organization name, theorizing that more professional and legitimate organizations will have higher similarity and be less prone to be fraud.
+2. We engineered a feature to determine how similar the subdomain of the email is to organization name, theorizing that more professional and legitimate organizations will have higher similarity and be less prone to be fraud. This was created by using the FuzzyWuzzy package which calculates the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two strings.
 
 3. "Public Notification Period" - time elapsed between published time and start time
 
@@ -47,13 +47,14 @@ Reviewed each of the features to try to discern what we thought it represented, 
 
 ![engineered_boxplots](images/boxplots_new.png)
 
-Feature Importance (insert graph here)
+Feature Importance:
+![boxplots](images/feature_importance.png)
 
 # Model
 
 
 
-We used a random forest model and performed a RandomizedSearchCV for our hyperparameter tuning. (only if extra time)
+We used a random forest model
 
 insert rf_random.best_params_ here (only if extra time)
 
