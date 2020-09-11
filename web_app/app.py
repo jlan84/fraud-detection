@@ -21,6 +21,8 @@ def fraud_warning_level(proba):
 def home():
     event = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point').content 
     event_json = json.loads(event)
+    event_df = pd.json_normalize(event_json)
+    prediction = vectorize_single(event_df)
     event_name = event_json['name']
     event_desc = text_from_html(event_json['description'])
     event_payouts = event_json['previous_payouts']
@@ -30,13 +32,17 @@ def home():
                               - event_json['event_created']) / 60) / 60) / 24
     event_email = event_json['email_domain']
     event_country = event_json['country']
-    warn = fraud_warning_level(0.80)
+    event_caps_desc = 'Placeholder'
+    event_caps_name = 'Placeholder'
+    warn = fraud_warning_level(prediction[:, 1])
     return render_template('index.html', event_name=event_name,
                            event_desc=event_desc,
                            event_payouts=len(event_payouts),
                            event_public_notice=round(event_public_notice),
                            event_private_notice=round(event_private_notice),
                            event_email=event_email,
+                           event_caps_desc=event_caps_desc,
+                           event_caps_name=event_caps_name,
                            event_country=event_country, warning=warn)
 
 # Blog Model Info
@@ -79,7 +85,6 @@ def event():
     event_json = json.loads(event)
     event_df = pd.json_normalize(event_json)
     prediction = vectorize_single(event_df)
-    # prediction = model_unpickled.predict_proba(vc_event)
     warn = fraud_warning_level(prediction[:, 1])
     event_id = insert_event(event_df.to_json(), prediction[0][1])
     return f'{event_df} FRAUD ANALYSIS: {warn} {event}'
