@@ -224,7 +224,7 @@ class NaiveBayes():
         ax: axes to be used for the plot
         """
         plot_confusion_matrix(self.nb_pipeline, self.X_test, self.y_test, xticks_rotation='vertical',
-                              cmap=plt.cm.Blues, ax=ax)
+                              cmap=plt.cm.Blues,values_format='d', ax=ax)
     
     def predic_probablility(self, X):
         return self.nb_pipeline.predict_proba(X)
@@ -239,31 +239,31 @@ if __name__ == "__main__":
     extra_stops = ['tickets', 00, 'event']
     stop_words.extend(extra_stops)
 
-    with open('nb_pipeline.pkl', 'rb') as f:
-        nb_pipeline = pickle.load(f)
+    # with open('nb_pipeline.pkl', 'rb') as f:
+    #     nb_pipeline = pickle.load(f)
     
-    new_df = df.iloc[1,:]
-    X = process_one(new_df, stop_words)
-    print(nb_pipeline.predict_proba(X))
-    # nb = NaiveBayes(df, stop_words)
-    # nb.description_to_text()
-    # nb.sub_set_df()
-    # nb.generate_train_test()
-    # nb.remove_X_train_stops()
-    # nb.remove_X_test_stops()
+    # new_df = df.iloc[1,:]
+    # X = process_one(new_df, stop_words)
+    # print(nb_pipeline.predict_proba(X))
+    nb = NaiveBayes(df, stop_words)
+    nb.description_to_text()
+    nb.sub_set_df()
+    nb.generate_train_test()
+    nb.remove_X_train_stops()
+    nb.remove_X_test_stops()
     
-    # nb.tf_idf_matrix()
-    # nb.naive_bayes_model()
-    # nb.return_top_n_words()
-    # nb.get_accuracy_classification_report()
+    nb.tf_idf_matrix()
+    nb.naive_bayes_model()
+    nb.return_top_n_words()
+    nb.get_accuracy_classification_report()
     # print(nb.class_report)
     # # probs = nb.predic_probablility(df['description'])
     # # print(type(probs))
     # # print(probs.shape)
     # # print(p)
 
-    # fig, ax = plt.subplots(figsize=(12,12))
-    # nb.confustion_matrix_plot(ax)
-    # ax.set_title('Fraud Confusion')
-    # plt.tight_layout()
-    # plt.show()
+    fig, ax = plt.subplots(figsize=(12,12))
+    nb.confustion_matrix_plot(ax)
+    ax.set_title('Fraud Confusion')
+    plt.tight_layout()
+    plt.show()
