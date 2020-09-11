@@ -78,8 +78,8 @@ def event():
     event = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point').content 
     event_json = json.loads(event)
     event_df = pd.json_normalize(event_json)
-    vc_event = vectorize_single(event_df)
-    prediction = model_unpickled.predict_proba(vc_event)
+    prediction = vectorize_single(event_df)
+    # prediction = model_unpickled.predict_proba(vc_event)
     warn = fraud_warning_level(prediction[:, 1])
     event_id = insert_event(event_df.to_json(), prediction[0][1])
     return f'{event_df} FRAUD ANALYSIS: {warn} {event}'

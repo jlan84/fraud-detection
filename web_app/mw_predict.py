@@ -42,8 +42,8 @@ def vectorize_single(event):
     # event_filled = event_dropped.fillna(0)
     # event_for_model = event_filled._get_numeric_data()
     pipeline = pipeliner()
-    event_for_model = pipeline.predict_fraud(event)
-    return event_for_model
+    prediction = pipeline.predict_fraud(event)
+    return prediction
 
 def tag_visible(element):
     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
