@@ -52,7 +52,7 @@ class pipeliner():
         df['desc_cap'] = df.apply(lambda row: self.is_capitalized(self.text_from_html(row['description'])), axis=1)
 
 
-        drop_list = ['approx_payout_date', 'event_end', 'event_start', 'gts', 'num_payouts', 'payout_type', 'sale_duration', 'sale_duration2', 'ticket_types', 'num_order']
+        drop_list = ['venue_latitude', 'venue_longitude','has_header','approx_payout_date', 'event_end', 'event_start', 'gts', 'num_payouts', 'payout_type', 'sale_duration', 'sale_duration2', 'ticket_types', 'num_order']
         df = df.drop(drop_list, axis=1)
 
         X = df._get_numeric_data()
