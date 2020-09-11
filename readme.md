@@ -11,7 +11,21 @@ By: Martha Wood, Justin Lansdale, Alex Wyman, and Jeff Bauerle
 
 <!---![](https://www.mercuryinsurance.com/assets/images/blog-images/cyber-fraud-protection.jpg)--->
 
-#
+# The Scope
+
+Fraud is difficult to detect and can be devastating when it slips through the cracks. Because more and more of our transactions take place online, it is becoming easier for fraudsters to take advantage of us. E-commerce sales will reach $710 billion by the end 2020 and fraudsters are taking a staggering $14 billion cut.  In order to prevent this from occuring, we need to evolve our way of thinking about fraud detection.
+
+One of the many ways that fraudsters take advantage of people is through ticket sales.  Fraud is commited utilizing fake events to attract ticket sales and e-commerce companies usually end up taking the hit.  
+
+# The Strategy
+
+#1 Exploratory Data Analysis and Remove Leaky Features
+#2 Engineer Feature to Train a Model
+#3 Train the Model
+#4 Test the Model on a Holdout Set
+#5 Deploy the Model
+#6 Verify the Model with Live Data
+
 # EDA
 
 Reviewed each of the features to try to discern what we thought it represented, relative importance, and whether we thought it contained data leakage. 
@@ -29,6 +43,13 @@ Reviewed each of the features to try to discern what we thought it represented, 
 6. Payee Name (payee_name)
 7. Payout Type (payout_type)
 
+| Feature | Not Fraud                   | Fraud              |
+:-----------------------------:|:------------------:|:------:|
+ Name    |![](images/not_fraud_name.png) | ![](images/fraud_name.png) |
+| Feature | Not Fraud                   | Fraud              |
+ Organization    |![](images/not_fraud_org.png) | ![](images/fraud_org.png) |
+| Feature | Not Fraud                   | Fraud              |
+ Venue    |![](images/not_fraud_venue.png) | ![](images/fraud_venue.png) |
 
 # Feature Engineering
 
@@ -38,11 +59,11 @@ Reviewed each of the features to try to discern what we thought it represented, 
 
 2. We engineered a feature to determine how similar the subdomain of the email is to organization name, theorizing that more professional and legitimate organizations will have higher similarity and be less prone to be fraud. This was created by using the FuzzyWuzzy package which calculates the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two strings.
 
-3. "Public Notification Period" - time elapsed between published time and start time
+3. "Public Notification Period" - Total number of days that had elapsed between when the event had been published and the starting time of the event
 
-4. "Private Notification Period" - time elapsed between created time and event start time
+4. "Private Notification Period" - Total number of days between the time the event was created and the start time of the event.
 
-5. Number of previous payouts...
+5. "Previous Payouts" - Total Number of previous payouts that the user had recieved before creating the new event.
 
 6. "Percent Capitalized" - evaluated how much of the name contained capital letters. 
 
@@ -62,9 +83,12 @@ Feature Importance:
 We used a random forest model in combination with a Naive Bayes text classification model to obtian an F1 Score of 93.8% 
 
 
-insert confusion matrix 
 
-insert Precision-Recall curve
+
+Predicted | Fraud | Not Fraud
+---------|----------|---------
+ **1** | 419 | 12
+ **0**| 84 | 221
 
 # Detection System App
 
