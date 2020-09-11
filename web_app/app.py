@@ -9,11 +9,11 @@ app = Flask(__name__)
 #Threshold Testing
 def fraud_warning_level(proba):
     if proba > 0.75:
-        warning = '🚨FRAUD🚨'
+        warning = '🚨 HIGH RISK 🚨'
     elif proba > 0.5:
-        warning = '🚧 Possible Fraud'
+        warning = '🚧 Medium Risk 🚧'
     else:
-        warning = 'Not Fraud'
+        warning = '✅ Low Risk ✅'
     return warning
 
 # Home Page
@@ -22,7 +22,7 @@ def home():
     event = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point').content 
     event_json = json.loads(event)
     event_name = event_json['name']
-    warn = fraud_warning_level(0.52)
+    warn = fraud_warning_level(0.80)
     return render_template('index.html', event_name=event_name, warning=warn)
 
 @app.route('/model', methods=['GET'])
@@ -49,7 +49,7 @@ def reverse_string():
 
 @app.route('/fraud_warning', methods=['GET'])
 def fraud_warning():
-    warn = fraud_warning_level(0.52)
+    warn = fraud_warning_level(0.80)
     return warn
 
 @app.route('/event', methods=['GET'])

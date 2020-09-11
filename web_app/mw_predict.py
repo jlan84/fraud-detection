@@ -31,9 +31,6 @@ def insert_event(event, prediction):
     return event_id
 
 def vectorize_single(event):
-    # drop_list = ['acct_type', 'approx_payout_date', 'event_end', 'event_start',
-    #              'gts', 'num_payouts', 'payout_type', 'sale_duration',
-    #              'sale_duration2','ticket_types']
     keep_list = ['body_length', 'channels', 'delivery_method', 'event_created',
        'event_published', 'fb_published', 'has_analytics', 'has_header',
        'has_logo', 'name_length', 'num_order', 'object_id', 'org_facebook',
@@ -61,9 +58,7 @@ if __name__ == '__main__':
     # Output label probability
     print(prediction[0][1])
 
-    # Add to Postgres/Mongo DB
-    # ---Still need to create database, starting with simplest option I can
-    # ---think of: one column for the event, one column for the prediction
+    # Add to Postgres DB
     event_json = event.to_json()
     print(event['name'])
     event_id = insert_event(event_json, prediction[0][1])
