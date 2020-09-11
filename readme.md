@@ -30,9 +30,6 @@ One of the many ways that fraudsters take advantage of people is through ticket 
 
 Reviewed each of the features to try to discern what we thought it represented, relative importance, and whether we thought it contained data leakage. 
 
-<p align="center">
-<img src="images/Coffee_and_Contracts.png"  height="300" width="400" />
-</p>
 
 ### Data Leakage (removed)
 1. Account Type (acct_type)
