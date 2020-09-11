@@ -75,9 +75,9 @@ class aw_feature_eng:
 
         df['nb_proba'] = df.apply(lambda row: nb_pipeline.predict_proba(self.process_one(row.description, stop_words))[0][1], axis=1)
 
-        print(df.head().T)
+        # print(df.head().T)
 
-        drop_list = ['fraud', 'acct_type', 'approx_payout_date', 'event_end', 'event_start', 'gts', 'num_payouts', 'payout_type', 'sale_duration', 'sale_duration2', 'ticket_types', 'num_order']
+        drop_list = ['venue_latitude', 'venue_longitude','has_header', 'fraud', 'acct_type', 'approx_payout_date', 'event_end', 'event_start', 'gts', 'num_payouts', 'payout_type', 'sale_duration', 'sale_duration2', 'ticket_types', 'num_order']
         df = df.drop(drop_list, axis=1)
 
         X = df._get_numeric_data()
@@ -99,7 +99,7 @@ class aw_feature_eng:
         print(f'F1 Score model: {f1_score(y_test, preds)}')
         print(f'Presicion Score dumb model: {precision_score(y_test, preds, zero_division=0)}')
         print(confusion_matrix(y_test, preds))
-        return forest
+        return forest, y_test, X_test
 
     def split_email(self, email, get_ending=False):
         email = str(email)
@@ -189,6 +189,25 @@ class aw_feature_eng:
         visible_texts = filter(self.tag_visible, texts)  
         return u" ".join(t.strip() for t in visible_texts)
 
+def conf_mat(preds, y_test):
+    tn = 0
+    tp = 0
+    fn = 0
+    fp = 0
+    for pred, test in zip(preds, y_test):
+        if test:
+            if pred:
+                tp += 1
+            else:
+                fn += 1
+        else:
+            if pred:
+                fp += 1
+            else:
+                tn += 1
+
+    return tn, fp, fn, tp
+
 if __name__ == "__main__":  
     feat_eng = aw_feature_eng()
     # df = feat_eng.feature_eng(pd.read_json('data/data.zip'))
@@ -213,7 +232,23 @@ if __name__ == "__main__":
     # print(df.tld.unique())
 
     # forest = feat_eng.initial_model(df)
-    rf = feat_eng.initial_model(feat_eng.feature_eng(pd.read_json('../data/data.zip')), means=False)
+    rf, y_test, X_test = feat_eng.initial_model(feat_eng.feature_eng(pd.read_json('../data/data.zip')), means=False)
+
+    # with open('rf_pipeline.pkl', 'wb') as f:
+    #             pickle.dump(rf,f)
+
+    thresholds = [.1, .2, .3, .4, .5, .6, .7, .8, .9]
+    preds = rf.predict_proba(X_test)
+
+    for threshold in thresholds:
+        predicted = rf.predict_proba(X_test)
+        new_predicted = []
+        # new_predicted[:,0] = (predicted[:,0] < threshold).astype('int')
+        new_predicted = (predicted[:,1] >= threshold).astype('int')
+        print(predicted.shape)
+        print(f"Thresh:{threshold}   tn, fp, fn, tp : {conf_mat(new_predicted, y_test)}")
+
+
 
     important_features_dict = {}
     for x,i in enumerate(rf.feature_importances_):
