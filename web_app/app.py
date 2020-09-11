@@ -28,13 +28,16 @@ def home():
                             - event_json['event_published']) / 60) / 60) / 24
     event_private_notice = (((event_json['event_start']
                               - event_json['event_created']) / 60) / 60) / 24
+    event_email = event_json['email_domain']
+    event_country = event_json['country']
     warn = fraud_warning_level(0.80)
     return render_template('index.html', event_name=event_name,
                            event_desc=event_desc,
                            event_payouts=len(event_payouts),
                            event_public_notice=round(event_public_notice),
                            event_private_notice=round(event_private_notice),
-                           warning=warn)
+                           event_email=event_email,
+                           event_country=event_country, warning=warn)
 
 # Blog Model Info
 @app.route('/model', methods=['GET'])
@@ -79,7 +82,7 @@ def event():
     prediction = model_unpickled.predict_proba(vc_event)
     warn = fraud_warning_level(prediction[:, 1])
     event_id = insert_event(event_df.to_json(), prediction[0][1])
-    return f'{event_id} FRAUD ANALYSIS: {warn} {event}'
+    return f'{event_df} FRAUD ANALYSIS: {warn} {event}'
 
 if __name__ == '__main__':
     with open ('../data/model.pkl', 'rb') as f_un:
