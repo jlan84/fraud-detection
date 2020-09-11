@@ -1,6 +1,9 @@
 import requests
 import json
+import pickle
+import pandas as pd
 from flask import Flask, request, render_template
+from mw_predict import vectorize_single
 app = Flask(__name__)  
 
 #Threshold Testing
@@ -53,11 +56,14 @@ def fraud_warning():
 def event():
     event = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point').content 
     event_json = json.loads(event)
-    warn = fraud_warning_level(0.52)
-    return f'{event_json["name"]} FRAUD ALERT: {warn}'
+    event_df = pd.json_normalize(event_json)
+    vc_event = vectorize_single(event_df)
+    prediction = model_unpickled.predict_proba(vc_event)
+    warn = fraud_warning_level(prediction[:, 1])
+    return f'FRAUD ANALYSIS: {warn} {event}'
 
 if __name__ == '__main__':
-    # with open('../data/model.pkl') as f_un:
-    #     model_unpickled = pickle.load(f_un)  
+    with open ('../data/model.pkl', 'rb') as f_un:
+        model_unpickled = pickle.load(f_un) 
 
     app.run(host='0.0.0.0', port=8080, debug=True)

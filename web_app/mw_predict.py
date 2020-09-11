@@ -6,14 +6,13 @@ import psycopg2 as pg2
 def insert_event(event, prediction):
     '''Insert a new event into the event table'''
 
-    sql = '''INSERT INTO table(event)
-             VAlUES(%s) RETURNING event_id;'''
+    sql = '''INSERT INTO events (json, prob)
+             VALUES(%s, %s) RETURNING id;'''
     conn = None
-    vendor_id = None
+    event_id = None
     try: 
-        # connect to database (not sure how this part works)
-        params = config()
-        conn = pg2.connect(**params)
+        # connect to database
+        conn = pg2.connect(dbname='fraud', user='postgres', host='localhost', port='5432', password='ImCMoA19')
         # create cursor
         cur = conn.cursor()
         # execute insert statement
@@ -47,23 +46,25 @@ def vectorize_single(event):
 
 if __name__ == '__main__':
     # Read in single example
-    event = pd.read_csv('data/test_script_examples.csv', nrows=1, index_col='Unnamed: 0')
+    event = pd.read_csv('../data/test_script_examples.csv', nrows=1, index_col='Unnamed: 0')
 
     # Vectorize example
     vc_event = vectorize_single(event)
-    print(vc_event.columns)
 
     # Unpickle the model
-    with open ('data/model.pkl', 'rb') as f_un:
+    with open ('../data/model.pkl', 'rb') as f_un:
         model_unpickled = pickle.load(f_un)
 
     # Predict the label
     prediction = model_unpickled.predict_proba(vc_event)
 
     # Output label probability
-    print(prediction)
+    print(prediction[0][1])
 
     # Add to Postgres/Mongo DB
     # ---Still need to create database, starting with simplest option I can
     # ---think of: one column for the event, one column for the prediction
-    # insert_event(event, prediction)
+    event_json = event.to_json()
+    print(event['name'])
+    event_id = insert_event(event_json, prediction[0][1])
+    print(event_id)
