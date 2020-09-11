@@ -3,7 +3,7 @@ import json
 import pickle
 import pandas as pd
 from flask import Flask, request, render_template
-from mw_predict import vectorize_single, insert_event, text_from_html
+from mw_predict import vectorize_single, insert_event, text_from_html, return_all_events
 app = Flask(__name__)  
 
 #Threshold Testing
@@ -54,9 +54,10 @@ def home():
                               - event_json['event_created']) / 60) / 60) / 24
     event_email = event_json['email_domain']
     event_country = event_json['country']
-    event_caps_desc = is_capitalized(event_json['name'])
-    event_caps_name = is_capitalized(text_from_html(event_json['description']))
+    event_caps_name = is_capitalized(event_json['name'])
+    event_caps_desc = is_capitalized(text_from_html(event_json['description']))
     warn = fraud_warning_level(prediction[:, 1])
+    insert_event(event_df.to_json(), prediction[0][1])
     return render_template('index.html', event_name=event_name,
                            event_desc=event_desc,
                            event_payouts=len(event_payouts),
@@ -71,6 +72,11 @@ def home():
 @app.route('/model', methods=['GET'])
 def model():
     return render_template('blog.html')
+
+@app.route('/database', methods=['GET'])
+def database():
+    table = return_all_events()
+    return render_template('database.html', table=table)
 
 @app.route('/hello', methods=['GET'])
 def hello_world():
@@ -109,10 +115,11 @@ def event():
     prediction = vectorize_single(event_df)
     warn = fraud_warning_level(prediction[:, 1])
     event_id = insert_event(event_df.to_json(), prediction[0][1])
-    return f'{event_df} FRAUD ANALYSIS: {warn} {event}'
+    table = return_all_events()
+    return f'{table} FRAUD ANALYSIS: {warn} {prediction}'
 
 if __name__ == '__main__':
     with open ('../data/model.pkl', 'rb') as f_un:
         model_unpickled = pickle.load(f_un) 
 
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True, threaded=True)

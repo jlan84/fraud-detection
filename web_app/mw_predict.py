@@ -32,6 +32,24 @@ def insert_event(event, prediction):
                 conn.close
     return event_id
 
+def return_all_events():
+    sql = '''SELECT * FROM events'''
+    conn = None
+    full_event_table = None
+    try:
+        conn = pg2.connect(dbname='fraud', user='postgres', host='localhost', port='5432', password='ImCMoA19')
+        cur = conn.cursor()
+        cur.execute(sql)
+        full_event_table = cur.fetchall()
+        conn.commit()
+        cur.close()
+    except  (Exception, pg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close
+    return full_event_table
+
 def vectorize_single(event):
     # keep_list = ['body_length', 'channels', 'delivery_method', 'event_created',
     #    'event_published', 'fb_published', 'has_analytics', 'has_header',
