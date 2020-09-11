@@ -48,15 +48,17 @@ Reviewed each of the features to try to discern what we thought it represented, 
 ![engineered_boxplots](images/boxplots_new.png)
 
 Feature Importance:
-![boxplots](images/feature_importance.png)
+<p align="center">
+<img src="images/feature_importance.png"  height="500" width="500" />
+</p>
 
 # Model
 
 
 
-We used a random forest model
+We used a random forest model in combination with a Naive Bayes text classification model 
 
-insert rf_random.best_params_ here (only if extra time)
+~~insert rf_random.best_params_ here (only if extra time)~~
 
 insert confusion matrix 
 
