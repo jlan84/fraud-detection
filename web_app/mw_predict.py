@@ -3,6 +3,7 @@ import pickle
 import psycopg2 as pg2
 from bs4 import BeautifulSoup
 from bs4.element import Comment
+from aw_pipeline import pipeliner
 
 def insert_event(event, prediction):
     '''Insert a new event into the event table'''
@@ -32,14 +33,16 @@ def insert_event(event, prediction):
     return event_id
 
 def vectorize_single(event):
-    keep_list = ['body_length', 'channels', 'delivery_method', 'event_created',
-       'event_published', 'fb_published', 'has_analytics', 'has_header',
-       'has_logo', 'name_length', 'num_order', 'object_id', 'org_facebook',
-       'org_twitter', 'show_map', 'user_age', 'user_created', 'user_type',
-       'venue_latitude', 'venue_longitude']
-    event_dropped = event[keep_list]
-    event_filled = event_dropped.fillna(0)
-    event_for_model = event_filled._get_numeric_data()
+    # keep_list = ['body_length', 'channels', 'delivery_method', 'event_created',
+    #    'event_published', 'fb_published', 'has_analytics', 'has_header',
+    #    'has_logo', 'name_length', 'num_order', 'object_id', 'org_facebook',
+    #    'org_twitter', 'show_map', 'user_age', 'user_created', 'user_type',
+    #    'venue_latitude', 'venue_longitude']
+    # event_dropped = event[keep_list]
+    # event_filled = event_dropped.fillna(0)
+    # event_for_model = event_filled._get_numeric_data()
+    pipeline = pipeliner()
+    event_for_model = pipeline.predict_fraud(event)
     return event_for_model
 
 def tag_visible(element):
