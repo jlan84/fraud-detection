@@ -8,16 +8,38 @@ app = Flask(__name__)
 
 #Threshold Testing
 def fraud_warning_level(proba):
-    if proba > 0.75:
+    if proba > 0.7:
         warning = '🚨 HIGH RISK 🚨'
-    elif proba > 0.5:
+    elif proba > 0.2:
         warning = '🚧 Medium Risk 🚧'
     else:
         warning = '✅ Low Risk ✅'
     return warning
 
+def is_letter(letter):
+        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m']:
+            return True
+        else:
+            return False
+
+def is_capitalized(words):
+        total = 0
+        capitalized = 0
+        words = str(words)
+        for word in words:
+            if is_letter(word) == 0:
+                continue
+            if word.isupper():
+                capitalized += 1
+            total +=1
+        if total == 0:
+            return 0
+        else:
+            prop_capitalized = capitalized/total
+            return prop_capitalized
+
 # Home Page
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
     event = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point').content 
     event_json = json.loads(event)
@@ -32,8 +54,8 @@ def home():
                               - event_json['event_created']) / 60) / 60) / 24
     event_email = event_json['email_domain']
     event_country = event_json['country']
-    event_caps_desc = 'Placeholder'
-    event_caps_name = 'Placeholder'
+    event_caps_desc = is_capitalized(event_json['name'])
+    event_caps_name = is_capitalized(text_from_html(event_json['description']))
     warn = fraud_warning_level(prediction[:, 1])
     return render_template('index.html', event_name=event_name,
                            event_desc=event_desc,
@@ -41,8 +63,8 @@ def home():
                            event_public_notice=round(event_public_notice),
                            event_private_notice=round(event_private_notice),
                            event_email=event_email,
-                           event_caps_desc=event_caps_desc,
-                           event_caps_name=event_caps_name,
+                           event_caps_desc=round(event_caps_desc * 100),
+                           event_caps_name=round(event_caps_name * 100),
                            event_country=event_country, warning=warn)
 
 # Blog Model Info
