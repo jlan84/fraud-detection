@@ -1,7 +1,8 @@
 import pandas as pd
 import pickle
 import psycopg2 as pg2
-# from config import config    # from the Postgres webpage (not sure what it does) 
+from bs4 import BeautifulSoup
+from bs4.element import Comment
 
 def insert_event(event, prediction):
     '''Insert a new event into the event table'''
@@ -40,6 +41,19 @@ def vectorize_single(event):
     event_filled = event_dropped.fillna(0)
     event_for_model = event_filled._get_numeric_data()
     return event_for_model
+
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+
+def text_from_html(body):
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text=True)
+    visible_texts = filter(tag_visible, texts)  
+    return u" ".join(t.strip() for t in visible_texts)
 
 if __name__ == '__main__':
     # Read in single example
