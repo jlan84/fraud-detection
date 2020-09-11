@@ -11,12 +11,14 @@ By: Martha Wood, Justin Lansdale, Alex Wyman, and Jeff Bauerle
 
 <!---![](https://www.mercuryinsurance.com/assets/images/blog-images/cyber-fraud-protection.jpg)--->
 
-
+#
 # EDA
 
 Reviewed each of the features to try to discern what we thought it represented, relative importance, and whether we thought it contained data leakage. 
 
-![boxplots](images/boxplots.png)
+<p align="center">
+<img src="images/Coffee_and_Contracts.png"  height="300" width="400" />
+</p>
 
 ### Data Leakage (removed)
 1. Account Type (acct_type)
@@ -59,7 +61,6 @@ Feature Importance:
 
 We used a random forest model in combination with a Naive Bayes text classification model to obtian an F1 Score of 93.8% 
 
-~~insert rf_random.best_params_ here (only if extra time)~~
 
 insert confusion matrix 
 
@@ -67,7 +68,9 @@ insert Precision-Recall curve
 
 # Detection System App
 
-![](images/Profit_Curve.png)
+<p align="center">
+<img src="images/Profit_Curve.png"  height="400" width="400" />
+</p>
 
 Fraud was categorized into low risk (<20% probability), medium risk (20%-70% probability) and high risk (over 70% probability). 
 
