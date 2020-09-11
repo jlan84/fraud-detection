@@ -1,6 +1,7 @@
-<p align="center">
-<img src="fraud-fraud-everywhere-l0k73s.jpg"  height="200" width="500" />
-</p>
+
+
+![](images/fraud-fraud-everywhere-l0k73s.jpg)
+
 
 # Fraud Detection Case Study
 
@@ -56,7 +57,7 @@ Feature Importance:
 
 
 
-We used a random forest model in combination with a Naive Bayes text classification model 
+We used a random forest model in combination with a Naive Bayes text classification model to obtian an F1 Score of 93.8% 
 
 ~~insert rf_random.best_params_ here (only if extra time)~~
 
@@ -66,9 +67,7 @@ insert Precision-Recall curve
 
 # Detection System App
 
-<p align="center">
-<img src="Profit_Curve.png"  height="400" width="600" />
-</p>
+![](images/Profit_Curve.png)
 
 Fraud was categorized into low risk (<20% probability), medium risk (20%-70% probability) and high risk (over 70% probability). 
 
