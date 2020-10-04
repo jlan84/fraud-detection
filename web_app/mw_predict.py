@@ -14,7 +14,8 @@ def insert_event(event, prediction):
     event_id = None
     try: 
         # connect to database
-        conn = pg2.connect(dbname='fraud', user='postgres', host='localhost', port='5432', password='ImCMoA19')
+        conn = pg2.connect(dbname='fraud', user='postgres', host='localhost', 
+                           port='5432', password='ImCMoA19')
         # create cursor
         cur = conn.cursor()
         # execute insert statement
@@ -37,7 +38,8 @@ def return_all_events():
     conn = None
     full_event_table = None
     try:
-        conn = pg2.connect(dbname='fraud', user='postgres', host='localhost', port='5432', password='ImCMoA19')
+        conn = pg2.connect(dbname='fraud', user='postgres', host='localhost', 
+                           port='5432', password='ImCMoA19')
         cur = conn.cursor()
         cur.execute(sql)
         full_event_table = cur.fetchall()
@@ -64,7 +66,8 @@ def vectorize_single(event):
     return prediction
 
 def tag_visible(element):
-    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+    if element.parent.name in ['style', 'script', 'head', 'title', 
+                               'meta', '[document]']:
         return False
     if isinstance(element, Comment):
         return False
@@ -78,7 +81,8 @@ def text_from_html(body):
 
 if __name__ == '__main__':
     # Read in single example
-    event = pd.read_csv('../data/test_script_examples.csv', nrows=1, index_col='Unnamed: 0')
+    event = pd.read_csv('../data/test_script_examples.csv', nrows=1, 
+                        index_col='Unnamed: 0')
 
     # Vectorize example
     vc_event = vectorize_single(event)

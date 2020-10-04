@@ -16,8 +16,10 @@ def fraud_warning_level(proba):
         warning = '✅ Low Risk ✅'
     return warning
 
-def is_letter(letter):
-        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m']:
+def is_letter(self, letter):
+        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s',
+                              'd','f','g','h','j','k','l','z','x','c','v','b',
+                              'n','m']:
             return True
         else:
             return False

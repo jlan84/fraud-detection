@@ -15,7 +15,7 @@ from justin_scripts import NaiveBayes
 np.random.seed(42)
 plt.style.use('fivethirtyeight')
 
-class aw_feature_eng:
+class FeatEng():
 
     def __init__(self):
         pass
@@ -25,8 +25,12 @@ class aw_feature_eng:
         stop_words = stopwords.words('english')
         extra_stops = ['tickets', '00']
         stop_words.extend(extra_stops)
-        df['desc_text'] = df.apply(lambda row: self.text_from_html(row['description']), axis=1)
-        df['fraud'] =  np.where((df['acct_type'] == 'fraudster') | (df['acct_type'] == 'fraudster_event') | (df['acct_type'] == 'fraudster_att'), 1, 0)
+        df['desc_text'] = df.apply(lambda row: self.text_from_html(
+                                   row['description']), axis=1)
+
+        df['fraud'] =  np.where((df['acct_type'] == 'fraudster') | 
+                                (df['acct_type'] == 'fraudster_event') | 
+                                (df['acct_type'] == 'fraudster_att'), 1, 0)
 
         nb = NaiveBayes(df, stop_words)
 
@@ -41,9 +45,6 @@ class aw_feature_eng:
                         or w[0] == '-' and w[1:].isdigit())]
         X_ = ' '.join(stop_num)
         X_ = [X_]
-        # cv = CountVectorizer()
-        # count_mx = cv.fit_transform(X)
-        # tfidf_mx = tfidf_matrix.transform(count_mx)
         return X_
 
 
@@ -51,33 +52,44 @@ class aw_feature_eng:
     def initial_model(self, df, means=True):
         print(df.head().T)
 
-        y = np.where((df['acct_type'] == 'fraudster') | (df['acct_type'] == 'fraudster_event') | (df['acct_type'] == 'fraudster_att'), 1, 0)
+        y = np.where((df['acct_type'] == 'fraudster') | 
+                     (df['acct_type'] == 'fraudster_event') | 
+                     (df['acct_type'] == 'fraudster_att'), 1, 0)
             
         stop_words = stopwords.words('english')
         extra_stops = ['tickets', '00']
         stop_words.extend(extra_stops)
-        # nb = self.create_nb_col(df)
-        # nb.generate_train_test()
-        # nb.remove_X_train_stops()
-        # nb.remove_X_test_stops()
-        # nb.tf_idf_matrix()
-        # nb.naive_bayes_model()
-        # nb.return_top_n_words()
+        nb = self.create_nb_col(df)
+        nb.generate_train_test()
+        nb.remove_X_train_stops()
+        nb.remove_X_test_stops()
+        nb.tf_idf_matrix()
+        nb.naive_bayes_model()
+        nb.return_top_n_words()
 
-        # nb.get_accuracy_classification_report()
+        nb.get_accuracy_classification_report()
 
         with open('nb_pipeline.pkl', 'rb') as f:
             nb_pipeline = pickle.load(f)
 
-        df['fraud'] = np.where((df['acct_type'] == 'fraudster') | (df['acct_type'] == 'fraudster_event') | (df['acct_type'] == 'fraudster_att'), 1, 0)
+        df['fraud'] = np.where((df['acct_type'] == 'fraudster') | 
+                               (df['acct_type'] == 'fraudster_event') | 
+                               (df['acct_type'] == 'fraudster_att'), 1, 0)
 
         
 
-        df['nb_proba'] = df.apply(lambda row: nb_pipeline.predict_proba(self.process_one(row.description, stop_words))[0][1], axis=1)
+        df['nb_proba'] = df.apply(lambda row: nb_pipeline.predict_proba(
+                                  self.process_one(row.description, stop_words))
+                                  [0][1], axis=1)
 
         # print(df.head().T)
 
-        drop_list = ['venue_latitude', 'venue_longitude','has_header', 'fraud', 'acct_type', 'approx_payout_date', 'event_end', 'event_start', 'gts', 'num_payouts', 'payout_type', 'sale_duration', 'sale_duration2', 'ticket_types', 'num_order']
+        drop_list = ['venue_latitude', 'venue_longitude','has_header', 'fraud',
+                     'acct_type', 'approx_payout_date', 'event_end', 
+                     'event_start', 'gts', 'num_payouts', 'payout_type',
+                     'sale_duration', 'sale_duration2', 'ticket_types', 
+                     'num_order']
+
         df = df.drop(drop_list, axis=1)
 
         X = df._get_numeric_data()
@@ -89,7 +101,8 @@ class aw_feature_eng:
         else:
             X = X.fillna(0)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify= y, test_size=0.33)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify= y, 
+                                                            test_size=0.33)
 
         forest = RandomForestClassifier()
 
@@ -121,11 +134,12 @@ class aw_feature_eng:
         return frauds, not_fraud
 
     def is_letter(self, letter):
-        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m']:
+        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s',
+                              'd','f','g','h','j','k','l','z','x','c','v','b',
+                              'n','m']:
             return True
         else:
             return False
-
 
     def is_capitalized(self, words):
         total = 0
@@ -145,15 +159,21 @@ class aw_feature_eng:
 
     def feature_eng(self, df):
         # Insert our target of fraud = 1 and not fraud = 0
-        #df['fraud'] = np.where((df['acct_type'] == 'fraudster') | (df['acct_type'] == 'fraudster_event') | (df['acct_type'] == 'fraudster_att'), 1, 0)
+        df['fraud'] = np.where((df['acct_type'] == 'fraudster') | 
+                               (df['acct_type'] == 'fraudster_event') | 
+                               (df['acct_type'] == 'fraudster_att'), 1, 0)
         
         #break down the email domain into two categories subdomain and tld
         df['subdomain'] = df.apply(lambda row: self.split_email(row.email_domain), axis=1)
-        df['tld'] = df.apply(lambda row: self.split_email(row.email_domain, get_ending=True), axis=1)
+        df['tld'] = df.apply(lambda row: self.split_email(row.email_domain, 
+                                                          get_ending=True), 
+                                                          axis=1)
 
 
         # Use fuzzywuzzy to find the similarity of the email's subdomain and the organization's name
-        df['org_subdomain_similarity'] = df.apply(lambda row: fuzz.token_set_ratio(str(row.subdomain), str(row.org_name)), axis=1)
+        df['org_subdomain_similarity'] = df.apply(lambda row: fuzz.token_set_ratio(
+                                                  str(row.subdomain), 
+                                                  str(row.org_name)), axis=1)
 
         #Count the total number of previous payouts to the user
         df['num_previous'] = df.apply(lambda row: len(row.previous_payouts), axis=1)
@@ -163,21 +183,24 @@ class aw_feature_eng:
         df['date_start'] = pd.to_datetime(df.event_start, unit='s')
 
         #Find the number of days until the event from both when it was published and when it was created
-        df['public_notification_period'] = (((df.event_start - df.event_published) / 60) / 60) / 24
-        df['private_notification_period'] = (((df.event_start - df.event_created) / 60) / 60) / 24
+        df['public_notification_period'] = ((((df.event_start - df.event_published)
+                                               / 60) / 60) / 24)
+        
+        df['private_notification_period'] = ((((df.event_start - df.event_created)
+                                                / 60) / 60) / 24)
 
+        df['capitalized'] = df.apply(lambda row: self.is_capitalized(row['name']),
+                                     axis=1)
 
-        df['capitalized'] = df.apply(lambda row: self.is_capitalized(row['name']), axis=1)
+        df['desc_cap'] = df.apply(lambda row: self.is_capitalized(
+                                  self.text_from_html(row['description'])), 
+                                  axis=1)
 
-        df['desc_cap'] = df.apply(lambda row: self.is_capitalized(self.text_from_html(row['description'])), axis=1)
-
-        #df['random_baseline'] = df.apply(lambda row: np.random.rand(), axis=1)
-
-        #Return the feature engineered DataFrame
         return df
 
     def tag_visible(self, element):
-        if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        if element.parent.name in ['style', 'script', 'head', 'title', 'meta',
+                                   '[document]']:
             return False
         if isinstance(element, Comment):
             return False
@@ -209,33 +232,19 @@ def conf_mat(preds, y_test):
     return tn, fp, fn, tp
 
 if __name__ == "__main__":  
-    feat_eng = aw_feature_eng()
-    # df = feat_eng.feature_eng(pd.read_json('data/data.zip'))
-    # print(feat_eng.is_capitalized(df.name[0]))
-    # print(df.info())
-    # # df['desc_text'] = df.apply(lambda row: text_from_html(row.description), axis=1)
+    feat_eng = FeatEng()
+    df = feat_eng.feature_eng(pd.read_json('data/data.zip'))
+    
+    df['desc_text'] = df.apply(lambda row: text_from_html(row.description), axis=1)
+    fraud, not_fraud = feat_eng.split_on_fraud(df, describe=True)
 
+    forest = feat_eng.initial_model(df)
+    rf, y_test, X_test = feat_eng.initial_model(feat_eng.feature_eng(
+                                                pd.read_json('../data/data.zip')),
+                                                means=False)
 
-    # print(feat_eng.split_email(df.email_domain.loc[[1]], get_ending=False))
-    # print(df.email_domain.loc[[1]])
-    # print(df.org_name.loc[[1]])
-    # print(df.loc[[48]].T)
-    # print(df.delivery_method.unique())
-
-    # # fraud, not_fraud = feat_eng.split_on_fraud(df, describe=True)
-
-    # # fraud.org_subdomain_similarity.hist(bins=40)
-    # # plt.show()
-    # # not_fraud.org_subdomain_similarity.hist(bins=40)
-    # # plt.show()
-
-    # print(df.tld.unique())
-
-    # forest = feat_eng.initial_model(df)
-    rf, y_test, X_test = feat_eng.initial_model(feat_eng.feature_eng(pd.read_json('../data/data.zip')), means=False)
-
-    # with open('rf_pipeline.pkl', 'wb') as f:
-    #             pickle.dump(rf,f)
+    with open('rf_pipeline.pkl', 'wb') as f:
+                pickle.dump(rf,f)
 
     thresholds = [.1, .2, .3, .4, .5, .6, .7, .8, .9]
     preds = rf.predict_proba(X_test)
