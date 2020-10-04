@@ -90,7 +90,7 @@ Predicted | Fraud | Not Fraud
 # Detection System App
 
 <p align="center">
-<img src="images/Profit_Curve.png"  height="400" width="400" />
+<img src="images/Profit_Curve.png"  height="500" width="600" />
 </p>
 
 Fraud was categorized into low risk (<20% probability), medium risk (20%-70% probability) and high risk (over 70% probability). 

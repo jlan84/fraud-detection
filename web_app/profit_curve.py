@@ -12,7 +12,7 @@ def profits(cf_lst, thresholds, cost_benefit_matrix):
 
 if __name__ == "__main__":
     
-    cost_benefit_matrix = np.array([[0,-1000],[-10000,-1000]])
+    cost_benefit_matrix = np.array([[0, 1000],[10000, 1000]])
     thresholds = np.array([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
     x = np.array([[4293,12],[40,387]])
     total = np.sum(x)
@@ -35,10 +35,10 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(12,12))
 
-    ax.plot(thresholds, profit_lst, scaley=True, color='green')
-    ax.set_title('Profit vs Threshold Curve for Fraudulent Events')
-    ax.set_ylabel('Profit mil$', fontsize=16)
+    ax.plot(thresholds, profit_lst, scaley=True, color='green', linewidth=10)
+    ax.set_title('Cost vs Threshold Curve for Fraudulent Events')
+    ax.set_ylabel('Cost mil$', fontsize=16)
     ax.set_xlabel('Threshold', fontsize=16)
-    plt.ylim(-3000000,0)
+    plt.ylim(0,3000000)
     plt.tight_layout()
     plt.show()

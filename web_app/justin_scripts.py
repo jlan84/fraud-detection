@@ -1,10 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from bs4 import BeautifulSoup
-import numpy as np
 from bs4.element import Comment
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -16,11 +14,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report, confusion_matrix, plot_confusion_matrix
-import pandas as pd
 import re
-from collections import Counter
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
 import pickle as pickle
 
 
@@ -28,7 +23,8 @@ plt.style.use('fivethirtyeight')
 df = pd.read_json('../data/data.json')
 
 def tag_visible(element):
-        if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        if element.parent.name in ['style', 'script', 'head', 'title', 'meta', 
+                                   '[document]']:
             return False
         if isinstance(element, Comment):
             return False
