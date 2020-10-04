@@ -27,39 +27,51 @@ class pipeliner():
         extra_stops = ['tickets', '00']
         stop_words.extend(extra_stops)
 
-        df['nb_proba'] = df.apply(lambda row: nb_pipeline.predict_proba(self.process_one(row.description, stop_words))[0][0], axis=1)
+        df['nb_proba'] = df.apply(lambda row: 
+                                  nb_pipeline.predict_proba(self.process_one(
+                                  row.description, stop_words))[0][0], axis=1)
 
-        df['subdomain'] = df.apply(lambda row: self.split_email(row.email_domain), axis=1)
-        df['tld'] = df.apply(lambda row: self.split_email(row.email_domain, get_ending=True), axis=1)
+        df['subdomain'] = df.apply(lambda row: self.split_email(row.email_domain),
+                                   axis=1)
+        df['tld'] = df.apply(lambda row: self.split_email(row.email_domain, 
+                             get_ending=True), axis=1)
 
 
-            # Use fuzzywuzzy to find the similarity of the email's subdomain and the organization's name
-        df['org_subdomain_similarity'] = df.apply(lambda row: fuzz.token_set_ratio(str(row.subdomain), str(row.org_name)), axis=1)
+        # Use fuzzywuzzy to find the similarity of the email's 
+        # subdomain and the organization's name
+        df['org_subdomain_similarity'] = df.apply(lambda row: 
+                                                  fuzz.token_set_ratio(str(
+                                                  row.subdomain), str(row.org_name)),
+                                                  axis=1)
 
-            #Count the total number of previous payouts to the user
+        #Count the total number of previous payouts to the user
         df['num_previous'] = df.apply(lambda row: len(row.previous_payouts), axis=1)
 
-            #convert columns from seconds to DateTime
+        #convert columns from seconds to DateTime
         df['date_pub'] = pd.to_datetime(df.event_published, unit='s')
         df['date_start'] = pd.to_datetime(df.event_start, unit='s')
 
-            #Find the number of days until the event from both when it was published and when it was created
-        df['public_notification_period'] = (((df.event_start - df.event_published) / 60) / 60) / 24
-        df['private_notification_period'] = (((df.event_start - df.event_created) / 60) / 60) / 24
+        #Find the number of days until the event from both when it was 
+        # published and when it was created
+        df['public_notification_period'] = ((((df.event_start - df.event_published)
+                                              / 60) / 60) / 24)
+        df['private_notification_period'] = ((((df.event_start - df.event_created)
+                                              / 60) / 60) / 24)
 
+        df['capitalized'] = df.apply(lambda row: self.is_capitalized(row['name']),
+                                     axis=1)
+        df['desc_cap'] = df.apply(lambda row: self.is_capitalized(
+                                  self.text_from_html(row['description'])), 
+                                  axis=1)
 
-        df['capitalized'] = df.apply(lambda row: self.is_capitalized(row['name']), axis=1)
-        df['desc_cap'] = df.apply(lambda row: self.is_capitalized(self.text_from_html(row['description'])), axis=1)
-
-
-        drop_list = ['venue_latitude', 'venue_longitude','has_header','approx_payout_date', 'event_end', 'event_start', 'gts', 'num_payouts', 'payout_type', 'sale_duration', 'sale_duration2', 'ticket_types', 'num_order']
+        drop_list = ['venue_latitude', 'venue_longitude','has_header',
+                     'approx_payout_date', 'event_end', 'event_start', 'gts', 
+                     'num_payouts', 'payout_type', 'sale_duration', 
+                     'sale_duration2', 'ticket_types', 'num_order']
+        
         df = df.drop(drop_list, axis=1)
-
         X = df._get_numeric_data()
-
         return X.fillna(0)
-
-
 
     def predict_fraud(self, data):
         piped_data = self.pipeline(data)
@@ -80,7 +92,9 @@ class pipeliner():
         return X_
 
     def is_letter(self, letter):
-        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m']:
+        if letter.lower() in ['q','w','e','r','t','y','u','i','o','p','a','s',
+                              'd','f','g','h','j','k','l','z','x','c','v','b',
+                              'n','m']:
             return True
         else:
             return False
@@ -110,7 +124,8 @@ class pipeliner():
             return head
 
     def tag_visible(self, element):
-        if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        if element.parent.name in ['style', 'script', 'head', 'title', 'meta',
+                                   '[document]']:
             return False
         if isinstance(element, Comment):
             return False
